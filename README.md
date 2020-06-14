@@ -89,7 +89,7 @@ Arch Linux and Windows 10.
         # n ↵ add a new partition
         # ↵ to select default partition number of 2
         # ↵ to select default start at first sector
-        # +60G ↵ allocate whatever size wanted for linux
+        # +180G ↵ allocate whatever size wanted for linux
 
         # we're intentionally leaving space for Windows 10 partitions
 
