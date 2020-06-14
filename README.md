@@ -9,7 +9,7 @@ Arch Linux and Windows 10.
 - [Step 1: Use Arch USB to reformat drive](#step-1-use-arch-usb-to-reformat-drive)
 - [Step 2: Install Windows 10](#step-2-install-windows-10)
 - [Step 3: Let's Install Arch](#step-3-lets-install-arch)
-    - [Configure LUKS + LVM2 partitions on `mmcblk0p2`](#configure-luks--lvm2-partitions-on-mmcblk0p2)
+    - [Configure LUKS + LVM2 partitions on `sda2`](#configure-luks--lvm2-partitions-on-sda2)
     - [Wirelessly connect to the internet](#wirelessly-connect-to-the-internet)
     - [Mount, pacstrap and prepare for arch-chroot](#mount-pacstrap-and-prepare-for-arch-chroot)
     - [arch-chroot](#arch-chroot)
@@ -61,22 +61,22 @@ Arch Linux and Windows 10.
   2. Write ISO to USB drive
   3. Boot Pocket 2 and tap `F12`
   4. In the options, select the USB device containing Arch
-  5. Reformat `mmcblk0` disk
+  5. Reformat `sda` disk
 
     Essentially, this is what we're going for:
 
         NAME              FSTYPE        SIZE    NOTES                       MOUNTPOINT
-        mmcblk0
-        ├─mmcblk0p1       vfat          512M    efi                         /boot
-        ├─mmcblk0p2       luks+lvm2     60G     linux                       /
-        ├─mmcblk0p[3-5]                 ~58G    windows
+        sda
+        ├─sda1       vfat          512M    efi                         /boot
+        ├─sda2       luks+lvm2     180G    linux                       /
+        ├─sda[3-5]                 ~58G    windows
 
-    It's critical that we make the first partition (mmcblk0p1) the EFI partition. For now, we're going
+    It's critical that we make the first partition (sda1) the EFI partition. For now, we're going
     to placehold our linux partition because the Windows 10 installer will create a bunch of bullshit
     partitions. For this guide, by placing the linux partition directly after the EFI partition, we
     can let Windows create its dumpster fire of partitions, and it won't effect us.
 
-        gdisk /dev/mmcblk0
+        gdisk /dev/sda
         # o ↵ to create a new empty GUID partition table (GPT)
         # y ↵ to confirm
 
@@ -99,7 +99,7 @@ Arch Linux and Windows 10.
 
   5. Format the EFI partition to vfat
 
-        `mkfs.vfat /dev/mmcblk0p1`
+        `mkfs.vfat /dev/sda1`
 
 
 # Step 2: Install Windows 10
@@ -108,7 +108,7 @@ Arch Linux and Windows 10.
   2. Boot Pocket 2 and tap `F12`
   3. In the options, select the USB device containing the Windows 10 installer
   4. Install Windows 10. The only important thing is that in the disk partitioner, let Windows use the unused space at the end of
-  the drive. The Windows installer will automatically place its EFI files into the EFI partition (`mmcblk0p1`). The installer will
+  the drive. The Windows installer will automatically place its EFI files into the EFI partition (`sda1`). The installer will
   warn you that it has to create additional partitions which is normal.
 
 Windows will take over the Pocket 2 and act as if it's rolling solo and that's completely fine. It will reboot a couple times. It's
@@ -118,15 +118,15 @@ also normal that Windows 10 is rotated right until Windows drivers are installed
 # Step 3: Let's Install Arch
 Remove the Windows 10 install USB stick and, just like step one, insert the Arch install USB and boot into Arch.
 
-## Configure LUKS + LVM2 partitions on `mmcblk0p2`
+## Configure LUKS + LVM2 partitions on `sda2`
 
-    # Encrypt /dev/mmcblk0p2
+    # Encrypt /dev/sda2
     # This step will ask for a password which will be used to unlock the partition on boot. Make sure you know the password.
-    cryptsetup luksFormat -v -s 512 -h sha512 /dev/mmcblk0p2
+    cryptsetup luksFormat -v -s 512 -h sha512 /dev/sda2
 
     # Open/mount encrypted disk
     # Upon unlocking, this will mount the unlocked disk to /dev/mapper/luks.
-    cryptsetup luksOpen /dev/mmcblk0p2 luks
+    cryptsetup luksOpen /dev/sda2 luks
 
     # Create LVM2 Physical Volume (PV) on /dev/mapper/luks
     pvcreate /dev/mapper/luks
@@ -153,11 +153,11 @@ wifi network.
     # Note: /mnt becomes your actual Arch install.
     mount /dev/mapper/rootvg-root /mnt
 
-    # Make the boot directory to mount the EFI (mmcblk0p1) partition
+    # Make the boot directory to mount the EFI (sda1) partition
     mkdir /mnt/boot
 
     # Mount the EFI parition
-    mount /dev/mmcblk0p1 /mnt/boot
+    mount /dev/sda1 /mnt/boot
 
     # Pacstrap the /mnt directory with utilities needed for arch-chroot
     pacstrap /mnt base base-devel dialog openssl-1.0 bash-completion git intel-ucode wpa_supplicant
@@ -200,10 +200,10 @@ alongside Windows' `Windows Boot Manager`.
 Windows will be included as a choice on boot, and any additional entries must be created in the
 directory `/boot/loader/entries/`. We're going to create a default entry for `arch`.
 
-First, we need the block or UUID of the mmcblk0p2 LUKS partition for our `arch` entry. Since
+First, we need the block or UUID of the sda2 LUKS partition for our `arch` entry. Since
 you're working sideways with little ass text, lets dump that ID right into the empty entry file:
 
-    blkid | grep mmcblk0p2 | cut -d \" -f 2 > /boot/loader/entries/arch.conf
+    blkid | grep sda2 | cut -d \" -f 2 > /boot/loader/entries/arch.conf
 
 Next, add the following to the `/boot/loader/entries/arch.conf` entry. Replace `[UUID]` with the
 UUID you dumped into the file. Remove the brackets.
