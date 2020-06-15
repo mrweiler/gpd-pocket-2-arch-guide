@@ -118,6 +118,10 @@ also normal that Windows 10 is rotated right until Windows drivers are installed
 # Step 3: Let's Install Arch
 Remove the Windows 10 install USB stick and, just like step one, insert the Arch install USB and boot into Arch.
 
+## Set the keyboard layout
+
+    # loadkeys de-latin1
+
 ## Configure LUKS + LVM2 partitions on `sda2`
 
     # Encrypt /dev/sda2
