@@ -170,7 +170,7 @@ Alternatively use an ethernet connection if available.
     mount /dev/sda1 /mnt/boot
 
     # Pacstrap the /mnt directory with utilities needed for arch-chroot
-    pacstrap /mnt base base-devel dialog openssl-1.0 bash-completion git intel-ucode wpa_supplicant
+    pacstrap /mnt base linux linux-firmware bash-completion intel-ucode nano 
 
     # Generate your fstab
     genfstab -pU /mnt >> /mnt/etc/fstab
