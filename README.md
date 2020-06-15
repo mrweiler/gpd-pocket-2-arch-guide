@@ -130,7 +130,7 @@ Remove the Windows 10 install USB stick and, just like step one, insert the Arch
 
     # Open/mount encrypted disk
     # Upon unlocking, this will mount the unlocked disk to /dev/mapper/luks.
-    cryptsetup luksOpen /dev/sda2 luks
+    cryptsetup open /dev/sda2 luks
 
     # Create LVM2 Physical Volume (PV) on /dev/mapper/luks
     pvcreate /dev/mapper/luks
