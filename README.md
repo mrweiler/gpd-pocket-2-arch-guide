@@ -156,7 +156,7 @@ wifi network.
 Alternatively use an ethernet connection if available.
 
     # dhcpcd
-    
+
 ## Mount, pacstrap and prepare for arch-chroot
 
     # Mount the ext4-formatted root LV
@@ -185,7 +185,7 @@ Awesome! You're now in your to-be Arch filesystem. Let's install some basic shit
 
 Set your hostname (yeah, this is the most difficult part .. at least for me)
 
-    echo MYHOSTNAME > /mnt/etc/hostname
+    echo MYHOSTNAME > /etc/hostname
 
 By now, you're probably sick of looking at tiny text, sideways. Let's fix the font size issue (on
 reboot) by creating the file `/etc/vconsole.conf` and adding:
