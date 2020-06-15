@@ -145,12 +145,18 @@ Remove the Windows 10 install USB stick and, just like step one, insert the Arch
     # Finally, format the logical volume to ext4
     mkfs.ext4 /dev/mapper/rootvg-root
 
-## Wirelessly connect to the internet
-Internet is needed to download packages. `wifi-menu` is a basic curses command which will temporarily select and configure a
+## Connect to the internet
+Internet is needed to download packages. 
+
+`wifi-menu` is a basic curses command which will temporarily select and configure a
 wifi network.
 
     wifi-menu
 
+Alternatively use an ethernet connection if available.
+
+    # dhcpcd
+    
 ## Mount, pacstrap and prepare for arch-chroot
 
     # Mount the ext4-formatted root LV
